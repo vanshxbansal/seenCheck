@@ -1,18 +1,20 @@
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:ojas/Screens/chat_screen.dart';
 import 'package:ojas/Screens/profile_screen.dart';
+import 'package:ojas/models/login_data.dart';
+import 'package:ojas/welcome.dart';
 import 'package:ojas/widgets/widgets/floating_actionButton.dart';
 import 'package:ojas/widgets/widgets/icon_buttons_bt_appbar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ojas/widgets/widgets/input_field.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({super.key, this.title});
 
-  final String title;
+  final String? title;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -156,7 +158,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 title: "Log Out",
                 subtitle: "",
                 titleColor: Colors.red,
-
+                onTap: () async {
+                  var box = Hive.box<LoginData>('loginBox');
+                  var loginData = box.get('login');
+                  loginData!.isActive = false;
+                  await box.put('login', loginData);
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => Welcome()),
+                        (Route<dynamic> route) => false,  // This will remove all existing routes.
+                  );
+                }
                 // trailingIconColor: Colors.red,
               ),
               const SizedBox(height: 30),

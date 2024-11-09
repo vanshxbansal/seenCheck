@@ -35,25 +35,24 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
+  hive:
+  hive_flutter:
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   google_sign_in: ^5.3.2
   #  flutter_facebook_auth: ^5.0.5
-  http: ^1.2.1
+  http:
   provider: ^6.0.3
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the analysis_options.yaml file located at the root of your
   # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
-  flutter_lints: ^4.0.0
-  location: ^7.0.0
-  flutter_polyline_points: ^2.1.0
-  google_maps_flutter: ^2.7.0
-  url_launcher: ^6.3.0
+  # rules and activating additional ones
   font_awesome_flutter:
+  hive_generator:
+  build_runner:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

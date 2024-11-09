@@ -1,7 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ojas/otp_screen.dart';
-
+import 'package:http/http.dart' as http;
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -12,26 +13,72 @@ class Register extends StatefulWidget {
 
 class RegisterState extends State<Register> {
   final TextEditingController _controller = TextEditingController();
-  bool _isButtonEnabled = false;
   final FocusNode _focusNode = FocusNode();
+  bool _isLoading = false;  // Flag to track loading state
 
   @override
   void initState() {
     super.initState();
-    _controller.addListener(_checkInputLength);
-  }
-
-  void _checkInputLength() {
-    setState(() {
-      _isButtonEnabled = _controller.text.length == 10;
-    });
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    _focusNode.dispose();
     super.dispose();
+  }
+
+  bool _isValidEmail(String email) {
+    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    return emailRegex.hasMatch(email);
+  }
+
+  // Function to send the OTP email using the API
+  Future<void> _sendOtpEmail(String email) async {
+    setState(() {
+      _isLoading = true;  // Show loader
+    });
+
+    const apiUrl = 'http://10.0.2.2:8000/api/send-email';
+    final headers = {'Content-Type': 'application/json'};
+
+    // Prepare the request body
+    final body = jsonEncode({
+      'recipient': email,
+      'subject': 'Your OTP Code',
+      'message': 'Your OTP is: 1234',  // You can dynamically generate an OTP here
+    });
+
+    try {
+      final response = await http.post(Uri.parse(apiUrl), headers: headers, body: body);
+      print(response.body);
+      print(response.statusCode);
+
+      if (response.statusCode == 200) {
+        // If the request is successful, show a confirmation
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('OTP sent to your email!')),
+        );
+        // Navigate to OTP screen after successful email
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => Otp(email: _controller.text)),
+        );
+      } else {
+        // If there's an error with the request
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to send OTP, please try again.')),
+        );
+      }
+    } catch (e) {
+      // If there's an exception (e.g. no internet connection)
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('An error occurred. Please try again later.')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;  // Hide loader
+      });
+    }
   }
 
   @override
@@ -105,11 +152,7 @@ class RegisterState extends State<Register> {
                     TextFormField(
                       controller: _controller,
                       focusNode: _focusNode,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(10),
-                      ],
-                      keyboardType: TextInputType.number,
+                      keyboardType: TextInputType.emailAddress,
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -122,16 +165,6 @@ class RegisterState extends State<Register> {
                         focusedBorder: OutlineInputBorder(
                           borderSide: const BorderSide(color: Colors.black12),
                           borderRadius: BorderRadius.circular(10),
-                        ),
-                        prefix: const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8),
-                          child: Text(
-                            '(+91)',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
                         ),
                         suffixIcon: const Icon(
                           Icons.check_circle,
@@ -146,27 +179,35 @@ class RegisterState extends State<Register> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _isButtonEnabled
-                            ? () {
-                          FocusManager.instance.primaryFocus?.unfocus();
-
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => const Otp()),
-                          );
-                        }
-                            : null,
+                        onPressed: () {
+                          String email = _controller.text.trim();
+                          if (_isValidEmail(email)) {
+                            _sendOtpEmail(email);  // Send OTP email
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Please enter a valid email address'),
+                                backgroundColor: Colors.black,
+                              ),
+                            );
+                          }
+                        },
                         style: ButtonStyle(
-                          foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
-                          backgroundColor: WidgetStateProperty.all<Color>(Colors.purple),
-                          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                          foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                          backgroundColor: MaterialStateProperty.all<Color>(Colors.purple),
+                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(24.0),
                             ),
                           ),
                         ),
-                        child: const Padding(
+                        child: Padding(
                           padding: EdgeInsets.all(14.0),
-                          child: Text(
+                          child: _isLoading
+                              ? const CircularProgressIndicator(
+                            color: Colors.white,
+                          )
+                              : const Text(
                             'Send',
                             style: TextStyle(fontSize: 16),
                           ),
