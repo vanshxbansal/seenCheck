@@ -10,7 +10,6 @@ import 'package:ojas/welcome.dart';
 import 'package:ojas/widgets/widgets/floating_actionButton.dart';
 import 'package:ojas/widgets/widgets/icon_buttons_bt_appbar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:ojas/widgets/widgets/input_field.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, this.title});
@@ -226,10 +225,9 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           body: Column(
             children: [
-              // Horizontal ListView for user avatars
               Container(
                 color: Colors.deepPurple,
-                height: 100, // Set a fixed height for the avatars row
+                height: 100,
                 padding: EdgeInsets.symmetric(vertical: 2),
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
@@ -246,7 +244,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   },
                 ),
               ),
-              // Main content: user posts
               Expanded(
                 child: ListView.builder(
                   itemCount: userPhotos.length,
@@ -255,9 +252,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     return Card(
                       color: Colors.deepPurple,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero, // Remove the rounded corners
+                        borderRadius: BorderRadius.zero,
                       ),
-                      margin: EdgeInsets.symmetric(vertical: 8), // Only vertical margin
+                      margin: EdgeInsets.symmetric(vertical: 8),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -279,7 +276,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                   label: 'Like',
                                   color: Colors.white,
                                   onPressed: () {
-                                    // Handle like action
                                   },
                                 ),
                                 actionButton(
@@ -287,7 +283,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                   label: 'Comment',
                                   color: Colors.white,
                                   onPressed: () {
-                                    // Handle comment action
                                   },
                                 ),
                                 actionButton(
@@ -295,7 +290,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                   label: 'Share',
                                   color: Colors.white,
                                   onPressed: () {
-                                    // Handle share action
                                   },
                                 ),
                               ],
@@ -316,7 +310,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 context,
                 MaterialPageRoute(builder: (context) => PostScreen()),
               );
-              // add a post screen will come on top with an animation
             },
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

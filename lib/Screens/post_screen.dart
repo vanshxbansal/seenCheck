@@ -43,20 +43,15 @@ class _PostScreenState extends State<PostScreen> {
     final request = http.MultipartRequest('POST', url);
 
     try {
-      // Add image file
       request.files.add(await http.MultipartFile.fromPath('image', imageFile.path));
-      // Add title field
       request.fields['title'] = 'Sample Title';
-
-      // Send the request
       final response = await request.send();
       final responseBody = await response.stream.bytesToString();
 
       if (response.statusCode == 201) {
         print('Image uploaded successfully!');
 
-        // Add to Hive box after successful upload
-        final imageName = imageFile.path.split('/').last; // Get the image name from the file path
+        final imageName = imageFile.path.split('/').last;
         imageFeedBox = Hive.box<ImageFeed>('imageFeed');
         imageFeedBox?.add(ImageFeed(imageName: imageName, title: 'Sample Title'));
 
@@ -70,7 +65,6 @@ class _PostScreenState extends State<PostScreen> {
     }
   }
 
-  // Function to submit the post (Upload logic can be added)
   void _submitPost() {
     if (_image == null) {
       ScaffoldMessenger.of(context).showSnackBar(

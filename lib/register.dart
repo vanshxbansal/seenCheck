@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:ojas/otp_screen.dart';
 import 'package:http/http.dart' as http;
 
@@ -32,7 +31,6 @@ class RegisterState extends State<Register> {
     return emailRegex.hasMatch(email);
   }
 
-  // Function to send the OTP email using the API
   Future<void> _sendOtpEmail(String email) async {
     setState(() {
       _isLoading = true;  // Show loader
@@ -41,11 +39,11 @@ class RegisterState extends State<Register> {
     const apiUrl = 'http://192.168.1.41:8000/api/send-email';
     final headers = {'Content-Type': 'application/json'};
 
-    // Prepare the request body
+
     final body = jsonEncode({
       'recipient': email,
       'subject': 'Your OTP Code',
-      'message': 'Your OTP is: 1234',  // You can dynamically generate an OTP here
+      'message': 'Your OTP is: 1234',
     });
 
     try {
@@ -54,29 +52,25 @@ class RegisterState extends State<Register> {
       print(response.statusCode);
 
       if (response.statusCode == 200) {
-        // If the request is successful, show a confirmation
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('OTP sent to your email!')),
         );
-        // Navigate to OTP screen after successful email
         Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => Otp(email: _controller.text)),
         );
       } else {
-        // If there's an error with the request
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to send OTP, please try again.')),
         );
       }
     } catch (e) {
-      // If there's an exception (e.g. no internet connection)
       print(e);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('An error occurred. Please try again later.')),
       );
     } finally {
       setState(() {
-        _isLoading = false;  // Hide loader
+        _isLoading = false;
       });
     }
   }
@@ -112,9 +106,6 @@ class RegisterState extends State<Register> {
                   color: Colors.deepPurple.shade50,
                   shape: BoxShape.circle,
                 ),
-                // child: Image.asset(
-                //   'assets/images/illustration-2.png',
-                // ),
               ),
               const SizedBox(
                 height: 12,
@@ -182,7 +173,7 @@ class RegisterState extends State<Register> {
                         onPressed: () {
                           String email = _controller.text.trim();
                           if (_isValidEmail(email)) {
-                            _sendOtpEmail(email);  // Send OTP email
+                            _sendOtpEmail(email);
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
@@ -193,9 +184,9 @@ class RegisterState extends State<Register> {
                           }
                         },
                         style: ButtonStyle(
-                          foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                          backgroundColor: MaterialStateProperty.all<Color>(Colors.purple),
-                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
+                          backgroundColor: WidgetStateProperty.all<Color>(Colors.purple),
+                          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(24.0),
                             ),

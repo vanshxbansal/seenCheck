@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:ojas/home_page.dart';
 import 'package:ojas/models/image_feed.dart';

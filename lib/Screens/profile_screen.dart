@@ -1,9 +1,7 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hive/hive.dart';
 import 'package:ojas/models/image_feed.dart';
-import 'package:ojas/models/login_data.dart';
 
 
 class ProfileScreen extends StatefulWidget {

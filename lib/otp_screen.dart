@@ -1,9 +1,7 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:hive/hive.dart';
 import 'package:ojas/home_page.dart';
 import 'package:http/http.dart' as http;
@@ -21,7 +19,6 @@ class Otp extends StatefulWidget {
 
 
 class OtpState extends State<Otp> {
-  // bool _isLoading = false; // Add this line to track loading state
 
   saveLoginData(String email, bool isActive) async {
     var box = Hive.box<LoginData>('loginBox');
@@ -95,7 +92,7 @@ class OtpState extends State<Otp> {
       resizeToAvoidBottomInset: false,
       backgroundColor: const Color(0xfff7f6fb),
       body: SafeArea(
-        child: Stack( // Use Stack widget to overlay the loader on top
+        child: Stack(
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
@@ -169,9 +166,9 @@ class OtpState extends State<Otp> {
                               await verifyEmail(context, code);
                             },
                             style: ButtonStyle(
-                              foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                              backgroundColor: MaterialStateProperty.all<Color>(Colors.purple),
-                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                              foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
+                              backgroundColor: WidgetStateProperty.all<Color>(Colors.purple),
+                              shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(24.0),
                                 ),

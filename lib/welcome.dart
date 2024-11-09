@@ -22,10 +22,6 @@ class WelcomeState extends State<Welcome> {
           padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 32),
           child: Column(
             children: [
-              // Image.asset(
-              //   'assets/images/illustration-1.png',
-              //   width: 240,
-              // ),
               const SizedBox(
                 height: 18,
               ),
@@ -79,41 +75,6 @@ class WelcomeState extends State<Welcome> {
                   ),
                 ),
               ),
-              // const SizedBox(
-              //   height: 22,
-              // ),
-              // SizedBox(
-              //   width: double.infinity,
-              //   child: ElevatedButton(
-              //     onPressed: _handleSignIn,
-              //     style: ButtonStyle(
-              //       foregroundColor: WidgetStateProperty.all<Color>(Colors.purple),
-              //       backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
-              //       shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-              //         RoundedRectangleBorder(
-              //           borderRadius: BorderRadius.circular(24.0),
-              //         ),
-              //       ),
-              //     ),
-              //     child: Padding(
-              //       padding: EdgeInsets.all(14.0),
-              //       child: Row(
-              //         mainAxisAlignment: MainAxisAlignment.center,
-              //         children: [
-              //           Image.network(
-              //             'https://developers.google.com/identity/images/g-logo.png', // Google logo URL
-              //             height: 24, // Adjust the size as needed
-              //           ),
-              //           const SizedBox(width: 10),
-              //           const Text(
-              //             'Sign in with Google',
-              //             style: TextStyle(fontSize: 16),
-              //           ),
-              //         ],
-              //       ),
-              //     ),
-              //   ),
-              // ),
             ],
           ),
         ),
