@@ -38,7 +38,7 @@ class RegisterState extends State<Register> {
       _isLoading = true;  // Show loader
     });
 
-    const apiUrl = 'http://10.0.2.2:8000/api/send-email';
+    const apiUrl = 'http://192.168.1.43:8000/api/send-email';
     final headers = {'Content-Type': 'application/json'};
 
     // Prepare the request body

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:ojas/home_page.dart';
+import 'package:ojas/models/image_feed.dart';
 import 'package:ojas/models/login_data.dart';
 import 'package:ojas/welcome.dart';
 
@@ -10,6 +11,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(LoginDataAdapter());
+  Hive.registerAdapter(ImageFeedAdapter());
+  await Hive.openBox<ImageFeed>('imageFeed');
   await Hive.openBox<LoginData>('loginBox');
   runApp(const MyApp());
 }

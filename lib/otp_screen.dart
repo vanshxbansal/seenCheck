@@ -57,7 +57,7 @@ class OtpState extends State<Otp> {
       _isLoading = true; // Show the loader when the button is pressed
     });
 
-    const apiUrl = 'http://10.0.2.2:8000/api/verify-otp';
+    const apiUrl = 'http://192.168.1.43:8000/api/verify-otp';
     final headers = {'Content-Type': 'application/json'};
 
     var body = jsonEncode({
