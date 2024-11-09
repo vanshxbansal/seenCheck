@@ -39,7 +39,7 @@ class _PostScreenState extends State<PostScreen> {
   }
 
   Future<void> _uploadImage(File imageFile) async {
-    final url = Uri.parse('http://192.168.1.43:8000/api/user-posts');
+    final url = Uri.parse('http://192.168.1.41:8000/api/user-posts');
     final request = http.MultipartRequest('POST', url);
 
     try {

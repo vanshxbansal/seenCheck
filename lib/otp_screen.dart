@@ -21,7 +21,7 @@ class Otp extends StatefulWidget {
 
 
 class OtpState extends State<Otp> {
-  bool _isLoading = false; // Add this line to track loading state
+  // bool _isLoading = false; // Add this line to track loading state
 
   saveLoginData(String email, bool isActive) async {
     var box = Hive.box<LoginData>('loginBox');
@@ -53,11 +53,8 @@ class OtpState extends State<Otp> {
 
   // Function to send the OTP email using the API
   Future<void> verifyEmail(BuildContext context, code) async {
-    setState(() {
-      _isLoading = true; // Show the loader when the button is pressed
-    });
 
-    const apiUrl = 'http://192.168.1.43:8000/api/verify-otp';
+    const apiUrl = 'http://192.168.1.41:8000/api/verify-otp';
     final headers = {'Content-Type': 'application/json'};
 
     var body = jsonEncode({
@@ -89,10 +86,6 @@ class OtpState extends State<Otp> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('An error occurred. Please try again later.')),
       );
-    } finally {
-      setState(() {
-        _isLoading = false; // Hide the loader when the request completes
-      });
     }
   }
 
@@ -168,9 +161,7 @@ class OtpState extends State<Otp> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: _isLoading
-                                ? null // Disable the button when loading
-                                : () async {
+                            onPressed: () async {
                               String code = controller1.text +
                                   controller2.text +
                                   controller3.text +
@@ -202,13 +193,6 @@ class OtpState extends State<Otp> {
                 ],
               ),
             ),
-            if (_isLoading) // Show the loader if _isLoading is true
-              Center(
-                child: Container(
-                  color: Colors.black45, // Semi-transparent background
-                  child: CircularProgressIndicator(),
-                ),
-              ),
           ],
         ),
       ),
