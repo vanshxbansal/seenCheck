@@ -1,4 +1,5 @@
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
@@ -6,6 +7,7 @@ import 'package:ojas/Screens/chat_screen.dart';
 import 'package:ojas/Screens/post_screen.dart';
 import 'package:ojas/Screens/profile_screen.dart';
 import 'package:ojas/models/login_data.dart';
+import 'package:ojas/settings.dart';
 import 'package:ojas/welcome.dart';
 import 'package:ojas/widgets/widgets/floating_actionButton.dart';
 import 'package:ojas/widgets/widgets/icon_buttons_bt_appbar.dart';
@@ -147,160 +149,85 @@ class _MyHomePageState extends State<MyHomePage> {
       home: SafeArea(
         child: Scaffold(
           resizeToAvoidBottomInset: false,
-          drawer: Drawer(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: <Widget>[
-                const DrawerHeader(
-                  decoration: BoxDecoration(color: Colors.deepPurpleAccent),
-                  child: Stack(
-                    children: [
-                      Center(
-                        child: SizedBox(
-                          height: 100,
-                          child: CircleAvatar(
-                            radius: 50,
-                            backgroundImage: NetworkImage(
-                                "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?t=st=1720637466~exp=1720641066~hmac=4d8d4e739ec80aa6acc8f8cd5aa967859ee542d7acca56dc3e88b50ae6c7be62&w=740"),
-                          ),
-                        ),
-                      ),
-                      Text(
-                        'Profile Name',
-                        style: TextStyle(color: Colors.white, fontSize: 15),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 25),
-                buildListTile(
-                  title: "Account Settings",
-                  subtitle: "Notifications Passwords and more.",
-                  trailingIcon: Icons.arrow_forward_ios_sharp,
-                ),
-                const Divider(indent: 18.0, endIndent: 18.0),
-                buildListTile(
-                  title: "Help & Support",
-                  subtitle: "Language and Text icon size.",
-                  trailingIcon: Icons.arrow_forward_ios_sharp,
-                ),
-                const Divider(indent: 18.0, endIndent: 18.0),
-                buildListTile(
-                  title: "Log Out",
-                  subtitle: "",
-                  titleColor: Colors.red,
-                  onTap: () async {
-                    var box = Hive.box<LoginData>('loginBox');
-                    var loginData = box.get('login');
-                    loginData!.isActive = false;
-                    await box.put('login', loginData);
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (context) => Welcome()),
-                          (Route<dynamic> route) => false,
-                    );
-                  },
-                ),
-                const SizedBox(height: 30),
-                const ListTile(
-                  subtitle: Padding(
-                    padding: EdgeInsets.only(top: 20),
-                    child: Text(
-                      "T&Cs and Privacy Policy",
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  title: Row(
-                    children: [
-                      Icon(FontAwesomeIcons.facebook),
-                      SizedBox(width: 25),
-                      Icon(FontAwesomeIcons.twitter),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+          drawer: CustomDrawer(),
           body: Column(
             children: [
-              Container(
-                color: Colors.deepPurple,
-                height: 100,
-                padding: EdgeInsets.symmetric(vertical: 2),
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: userPhotos.length,
-                  itemBuilder: (context, index) {
-                    final imageUrl = userPhotos[index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: CircleAvatar(
-                        radius: 30,
-                        backgroundImage: NetworkImage(imageUrl),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: userPhotos.length,
-                  itemBuilder: (context, index) {
-                    final imageUrl = userPhotos[index];
-                    return Card(
-                      color: Colors.deepPurple,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
-                      margin: EdgeInsets.symmetric(vertical: 8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Image.network(imageUrl, fit: BoxFit.cover),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Description of post $index',
-                              style: TextStyle(fontSize: 12, color: Colors.white),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                actionButton(
-                                  icon: Icons.thumb_up_alt_sharp,
-                                  label: 'Like',
-                                  color: Colors.white,
-                                  onPressed: () {
-                                  },
-                                ),
-                                actionButton(
-                                  icon: Icons.comment_outlined,
-                                  label: 'Comment',
-                                  color: Colors.white,
-                                  onPressed: () {
-                                  },
-                                ),
-                                actionButton(
-                                  icon: Icons.share_outlined,
-                                  label: 'Share',
-                                  color: Colors.white,
-                                  onPressed: () {
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
+              // Container(
+              //   color: Colors.deepPurple,
+              //   height: 100,
+              //   padding: EdgeInsets.symmetric(vertical: 2),
+              //   child: ListView.builder(
+              //     scrollDirection: Axis.horizontal,
+              //     itemCount: userPhotos.length,
+              //     itemBuilder: (context, index) {
+              //       final imageUrl = userPhotos[index];
+              //       return Padding(
+              //         padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              //         child: CircleAvatar(
+              //           radius: 30,
+              //           backgroundImage: NetworkImage(imageUrl),
+              //         ),
+              //       );
+              //     },
+              //   ),
+              // ),
+              // Expanded(
+              //   child: ListView.builder(
+              //     itemCount: userPhotos.length,
+              //     itemBuilder: (context, index) {
+              //       final imageUrl = userPhotos[index];
+              //       return Card(
+              //         color: Colors.deepPurple,
+              //         shape: RoundedRectangleBorder(
+              //           borderRadius: BorderRadius.zero,
+              //         ),
+              //         margin: EdgeInsets.symmetric(vertical: 8),
+              //         child: Column(
+              //           crossAxisAlignment: CrossAxisAlignment.start,
+              //           children: [
+              //             Image.network(imageUrl, fit: BoxFit.cover),
+              //             Padding(
+              //               padding: const EdgeInsets.all(8.0),
+              //               child: Text(
+              //                 'Description of post $index',
+              //                 style: TextStyle(fontSize: 12, color: Colors.white),
+              //               ),
+              //             ),
+              //             Padding(
+              //               padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              //               child: Row(
+              //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //                 children: [
+              //                   actionButton(
+              //                     icon: Icons.thumb_up_alt_sharp,
+              //                     label: 'Like',
+              //                     color: Colors.white,
+              //                     onPressed: () {
+              //                     },
+              //                   ),
+              //                   actionButton(
+              //                     icon: Icons.comment_outlined,
+              //                     label: 'Comment',
+              //                     color: Colors.white,
+              //                     onPressed: () {
+              //                     },
+              //                   ),
+              //                   actionButton(
+              //                     icon: Icons.share_outlined,
+              //                     label: 'Share',
+              //                     color: Colors.white,
+              //                     onPressed: () {
+              //                     },
+              //                   ),
+              //                 ],
+              //               ),
+              //             ),
+              //           ],
+              //         ),
+              //       );
+              //     },
+              //   ),
+              // ),
             ],
           ),
           bottomNavigationBar: bottomAppBar(context),

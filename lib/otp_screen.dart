@@ -51,7 +51,7 @@ class OtpState extends State<Otp> {
   // Function to send the OTP email using the API
   Future<void> verifyEmail(BuildContext context, code) async {
 
-    const apiUrl = 'http://192.168.1.41:8000/api/verify-otp';
+    const apiUrl = 'http://192.168.1.9:8000/api/verify-otp';
     final headers = {'Content-Type': 'application/json'};
 
     var body = jsonEncode({
