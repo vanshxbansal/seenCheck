@@ -1,80 +1,119 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart'as http;
-import 'package:ojas/models/image_feed.dart';
+import 'package:http/http.dart' as http;  // For making API requests
+import 'dart:convert';
+import 'package:hive/hive.dart';  // For accessing Hive
+import 'package:ojas/constant.dart';  // To encode data to JSON
+import 'package:ojas/models/login_data.dart';  // Assuming your LoginData model is here
 
-class PostScreen extends StatefulWidget {
+class PartyScreen extends StatefulWidget {
+  const PartyScreen({Key? key}) : super(key: key);
+
   @override
-  _PostScreenState createState() => _PostScreenState();
+  State<PartyScreen> createState() => _PartyScreenState();
 }
 
-class _PostScreenState extends State<PostScreen> {
-  final TextEditingController _descriptionController = TextEditingController();
-  XFile? _image;
-  Box<ImageFeed>? imageFeedBox;
-  final ImagePicker _picker = ImagePicker();
+class _PartyScreenState extends State<PartyScreen> {
+  TextEditingController partyNameController = TextEditingController();
+  TextEditingController partyDescriptionController = TextEditingController();
+  TextEditingController partyLocationController = TextEditingController();
+  TextEditingController partyDateController = TextEditingController();
+  TextEditingController partyTimeController = TextEditingController();
 
-  // Function to pick an image
-  Future<void> _pickImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    print(pickedFile);
-    setState(() {
-      if (pickedFile != null) {
-        _image = pickedFile;
-        _uploadImage(File(_image!.path));
-      } else {
-        print('No image selected.');
-      }
-    });
-    setState(() {
-      if (pickedFile != null) {
-        _image = pickedFile;
-      } else {
-        print('No image selected.');
-      }
-    });
+  bool isLoading = false;
+
+  @override
+  void dispose() {
+    partyNameController.dispose();
+    partyDescriptionController.dispose();
+    partyLocationController.dispose();
+    partyDateController.dispose();
+    partyTimeController.dispose();
+    super.dispose();
   }
 
-  Future<void> _uploadImage(File imageFile) async {
-    final url = Uri.parse('http://192.168.1.41:8000/api/user-posts');
-    final request = http.MultipartRequest('POST', url);
+  // Retrieve the email from Hive
+  Future<String?> getEmailFromHive() async {
+    var box = await Hive.openBox<LoginData>('loginBox');
+    LoginData? loginData = box.get('login');
+    return loginData?.email; // Return email if it exists
+  }
 
+  // Function to upload party info via API request
+  Future<void> uploadPartyInfo() async {
+    // Set loading to true when API request starts
+    setState(() {
+      isLoading = true;
+    });
+
+    // Get the email from Hive
+    String? email = await getEmailFromHive();
+    if (email == null) {
+      setState(() {
+        isLoading = false;
+      });
+      print("User email not found.");
+      return;
+    }
+
+    // API endpoint (adjust this to match your backend endpoint)
+    String apiUrl = api_url + '/create-party';
+    print(apiUrl);
+
+    // Data to be sent to the API
+    Map<String, dynamic> partyData = {
+      'party_name': partyNameController.text,
+      'party_description': partyDescriptionController.text,
+      'party_location': partyLocationController.text,
+      'party_date': partyDateController.text,
+      'party_time': partyTimeController.text,
+      'email': email,  // Send the email along with the party data
+    };
+
+    // Sending a POST request to the API
     try {
-      request.files.add(await http.MultipartFile.fromPath('image', imageFile.path));
-      request.fields['title'] = 'Sample Title';
-      final response = await request.send();
-      final responseBody = await response.stream.bytesToString();
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(partyData),  // Encoding data to JSON
+      );
 
-      if (response.statusCode == 201) {
-        print('Image uploaded successfully!');
+      // After the request completes, set loading to false
+      setState(() {
+        isLoading = false;
+      });
 
-        final imageName = imageFile.path.split('/').last;
-        imageFeedBox = Hive.box<ImageFeed>('imageFeed');
-        imageFeedBox?.add(ImageFeed(imageName: imageName, title: 'Sample Title'));
+      // Check if the request was successful (status code 200-299)
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        final responseData = jsonDecode(response.body);
+        print('Party Created Successfully: $responseData');
 
-        print('Image added to feed list in Hive.');
+        // Navigate back (pop the current screen)
+        Navigator.pop(context);
+
+        // Optionally, show a success message (Snackbar or Dialog)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Party created successfully!')),
+        );
       } else {
-        print('Image upload failed with status: ${response.statusCode}');
-        print('Response body: $responseBody');
+        print('Failed to create party. Status code: ${response.statusCode}');
+        // Show error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to create party. Please try again.')),
+        );
       }
     } catch (e) {
-      print('Error uploading image: $e');
-    }
-  }
+      print('Error during API request: $e');
 
-  void _submitPost() {
-    if (_image == null) {
+      // After the error, set loading to false
+      setState(() {
+        isLoading = false;
+      });
+
+      // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please add a photo to your post!')),
-      );
-    } else if (_descriptionController.text.isNotEmpty) {
-      print('Post submitted with image and description');
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please add a description!')),
+        const SnackBar(content: Text('Error during the request. Please try again.')),
       );
     }
   }
@@ -83,59 +122,109 @@ class _PostScreenState extends State<PostScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
-          'Create Post',
+          'Party Info',
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
         backgroundColor: Colors.deepPurple,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  minimumSize: Size(double.infinity, 48),
-                  backgroundColor: Colors.deepPurple,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 16.0),
+            child: Column(
+              children: <Widget>[
+                const SizedBox(height: 20),
+
+                // Party Name Field
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: TextField(
+                    controller: partyNameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Party Name',
+                      hintText: 'Birthday Bash',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
                 ),
-                onPressed: _pickImage,
-                child: Icon(Icons.camera_alt, size: 30, color: Colors.white),
-              ),
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: _descriptionController,
-              maxLines: 4,
-              decoration: InputDecoration(
-                hintText: 'Write a description...',
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-              ),
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _image == null ? null : _submitPost,
-              child: Text(
-                'Post',
-                style: TextStyle(fontSize: 18),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple,
-                foregroundColor: Colors.white,
-                minimumSize: Size(double.infinity, 48),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                const SizedBox(height: 16),
+
+                // Party Description Field
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: TextField(
+                    controller: partyDescriptionController,
+                    maxLines: 4,
+                    decoration: const InputDecoration(
+                      labelText: 'Party Description',
+                      hintText: 'A fun-filled evening with friends and family',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
                 ),
-              ),
+                const SizedBox(height: 16),
+
+                // Party Location Field
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: TextField(
+                    controller: partyLocationController,
+                    decoration: const InputDecoration(
+                      labelText: 'Party Location',
+                      hintText: 'New York City, Central Park',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Party Date Field
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: TextField(
+                    controller: partyDateController,
+                    decoration: const InputDecoration(
+                      labelText: 'Party Date (YYYY-MM-DD)',
+                      hintText: '2024-12-31',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Party Time Field
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: TextField(
+                    controller: partyTimeController,
+                    decoration: const InputDecoration(
+                      labelText: 'Party Time (HH:mm)',
+                      hintText: '18:00',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 25),
+
+                // Submit Button
+                ElevatedButton(
+                  onPressed: isLoading ? null : uploadPartyInfo,  // Disable button if loading
+                  child: isLoading
+                      ? const CircularProgressIndicator(
+                    color: Colors.white,
+                  )
+                      : const Text('Submit Party Info', style: TextStyle(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                    textStyle: const TextStyle(color: Colors.white),
+                    backgroundColor: Colors.deepPurple,
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

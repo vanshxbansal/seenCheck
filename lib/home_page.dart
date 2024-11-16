@@ -79,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             BuildIconButtonsForBottomAppBar(iconData: Icons.search, onTap: () {}),
             const Spacer(),
-            BuildIconButtonsForBottomAppBar(iconData: Icons.chat, onTap: () {
+            BuildIconButtonsForBottomAppBar(iconData: Icons.party_mode_outlined, onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) => const ChatScreen()),
               );
@@ -235,7 +235,7 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: () async {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => PostScreen()),
+                MaterialPageRoute(builder: (context) => PartyScreen()),
               );
             },
           ),
