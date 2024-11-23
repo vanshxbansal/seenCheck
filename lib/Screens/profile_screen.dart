@@ -34,7 +34,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     // Retrieve all ImageFeed objects from the box and add the image names to the list.
     for (var imageFeed in box.values) {
-      userPhotos.add('http://192.168.1.41:8000/media/images/'+imageFeed.imageName);  // Add each image name to the list
+      userPhotos.add('https://vanshxbansal.pythonanywhere.com/media/images/'+imageFeed.imageName);  // Add each image name to the list
     }
 
     print('Image names: $userPhotos');  // Print the list of image names

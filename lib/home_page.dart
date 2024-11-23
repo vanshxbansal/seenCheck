@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:ojas/Screens/chat_screen.dart';
+import 'package:ojas/Screens/party_info_screen.dart';
 import 'package:ojas/Screens/post_screen.dart';
 import 'package:ojas/Screens/profile_screen.dart';
 import 'package:ojas/models/login_data.dart';
@@ -141,17 +142,69 @@ class _MyHomePageState extends State<MyHomePage> {
       ],
     );
   }
+  final List<String> randomItems = [
+    'Habbit',
+    'Barcode',
+    'Monet',
+    'Diablo'
 
+  ];
+  final List<String> imageUrls = [
+    'assets/images/1.jpg',
+    'assets/images/2.jpg',
+    'assets/images/3.jpg',
+    'assets/images/Diablo.jpg',
+
+  ];
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: SafeArea(
         child: Scaffold(
+          // backgroundColor: Colors.,
+          appBar: AppBar(title: Text("partyy"),leading: Container(),),
           resizeToAvoidBottomInset: false,
           drawer: CustomDrawer(),
           body: Column(
             children: [
+              Container(
+                height: 150,  // Set the height of the horizontal list
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: imageUrls.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Column(
+                        children: [
+                          CircleAvatar(
+                            radius: 50,
+                            backgroundImage: AssetImage(imageUrls[index]),
+                          ),
+                          SizedBox(height: 8),
+                          Text(randomItems[index], style: TextStyle(color: Colors.white)),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+              Container(
+                height: 200,  // Set the height of the horizontal list
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: imageUrls.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: _buildSquareCard(imageUrls[index], randomItems[index],context),
+                    );
+                  },
+                ),
+              ),
               // Container(
               //   color: Colors.deepPurple,
               //   height: 100,
@@ -245,4 +298,54 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+}
+Widget _buildSquareCard(String imageUrl, String label,context) {
+  return Column(
+    children: [
+      Container(
+        child: GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => PartyInfoScreen()),
+            );
+          },
+          child: Card(
+            color: Colors.transparent,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10), // Rounded corners
+            ),
+            elevation: 4,
+            clipBehavior: Clip.antiAlias,  // Ensures the image is clipped to the card's border
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center, // Center text and image
+              children: [
+                // Image inside the card
+                Container(
+                  width: 150,  // Set the image width
+                  height: 100, // Set the image height (adjust as needed)
+                  child: Image.asset(
+                    imageUrl,
+                    fit: BoxFit.fill,  // BoxFit.cover will make the image cover the container, clipping as needed
+                  ),
+                ),
+                // SizedBox(height: 8),
+                // Label text inside the card
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+
+    ],
+  );
 }
