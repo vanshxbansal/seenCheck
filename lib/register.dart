@@ -47,9 +47,9 @@ class RegisterState extends State<Register> {
       'subject': 'Your OTP Code',
       'message': 'Your OTP is: 1234',
     });
-
     try {
       final response = await http.post(Uri.parse(apiUrl), headers: headers, body: body);
+      print(response.body);
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('OTP sent to your email!')),
@@ -63,6 +63,7 @@ class RegisterState extends State<Register> {
         );
       }
     } catch (e) {
+      print(e);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('An error occurred. Please try again later.')),
       );
